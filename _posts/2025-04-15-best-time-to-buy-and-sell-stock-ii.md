@@ -3,15 +3,15 @@ layout: post
 title: Best Time to Buy and Sell Stock II - Multiple Transactions
 ---
 
-Hi again! Following up on my [previous post](/2023/06/15/best-time-to-buy-and-sell-stock/) about the first stock trading problem, today I'm going to talk about "Best Time to Buy and Sell Stock II". This version introduces a new twist to the problem.
+Hi again! Following up on my [previous post](/2025/04/15/best-time-to-buy-and-sell-stock/) about the first stock trading problem, today I'm going to talk about "Best Time to Buy and Sell Stock II". This version introduces a new twist to the problem.
 
 ## The Problem
 
 [Problem on LeetCode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/)
 
-You are given an integer array prices where prices[i] is the price of a given stock on the ith day.
-On each day, you may decide to buy and/or sell the stock. You can only hold at most one share of the stock at any time. However, you can buy it then immediately sell it on the same day.
-Find and return the maximum profit you can achieve.
+> You are given an integer array prices where prices[i] is the price of a given stock on the ith day.
+> On each day, you may decide to buy and/or sell the stock. You can only hold at most one share of the stock at any time. However, you can buy it then immediately sell it on the same day.
+> Find and return the maximum profit you can achieve.
 
 For example, with prices [7,1,5,3,6,4]:
 - Buy on day 2 (price = 1)
@@ -96,4 +96,4 @@ The reason why this problem is different from the first one is that we're no lon
 
 This problem taught me that sometimes the simple solution is staring you right in the face. What initially seemed like a complex dynamic programming problem turned out to have an elegant and simple solution.
 
-In the [next post](/2023/06/17/best-time-to-buy-and-sell-stock-iii/), I'll tackle the next problem in the series, where we can make at most two transactions. I have a feeling things will get a bit more complex! 
+In the [next post](/2025/04/15/best-time-to-buy-and-sell-stock-iii/), I'll tackle the next problem in the series, where we can make at most two transactions. I have a feeling things will get a bit more complex! 

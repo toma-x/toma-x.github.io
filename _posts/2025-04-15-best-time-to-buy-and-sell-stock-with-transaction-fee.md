@@ -3,17 +3,17 @@ layout: post
 title: Best Time to Buy and Sell Stock with Transaction Fee
 ---
 
-Hi all! Welcome to the final installment of my LeetCode stock trading problem series. If you're joining in the middle, be sure to check out the previous posts: [part 1](/2023/06/15/best-time-to-buy-and-sell-stock/), [part 2](/2023/06/16/best-time-to-buy-and-sell-stock-ii/), [part 3](/2023/06/17/best-time-to-buy-and-sell-stock-iii/), [part 4](/2023/06/18/best-time-to-buy-and-sell-stock-iv/), and [part 5](/2023/06/19/best-time-to-buy-and-sell-stock-with-cooldown/).
+Hi all! Welcome to the final installment of my LeetCode stock trading problem series. If you're joining in the middle, be sure to check out the previous posts: [part 1](/2025/04/15/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/), [part 4](/2025/04/15/best-time-to-buy-and-sell-stock-iv/), and [part 5](/2025/04/15/best-time-to-buy-and-sell-stock-with-cooldown/).
 
 ## The Problem
 
 [Problem on LeetCode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
 
-You are given an array prices where prices[i] is the price of a given stock on the ith day, and an integer fee representing a transaction fee.
-Find the maximum profit you can achieve. You may complete as many transactions as you like, but you need to pay the transaction fee for each transaction.
-Note:
-You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
-The transaction fee is only charged once for each stock purchase and sale.
+> You are given an array prices where prices[i] is the price of a given stock on the ith day, and an integer fee representing a transaction fee.
+> Find the maximum profit you can achieve. You may complete as many transactions as you like, but you need to pay the transaction fee for each transaction.
+> Note:
+> You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+> The transaction fee is only charged once for each stock purchase and sale.
 
 For example, with prices [1,3,2,8,4,9] and fee = 2:
 - Buy on day 1 (price = 1)

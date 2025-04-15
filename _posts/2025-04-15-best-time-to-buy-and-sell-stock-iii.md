@@ -3,15 +3,15 @@ layout: post
 title: Best Time to Buy and Sell Stock III - At Most Two Transactions
 ---
 
-Hey folks! Continuing our journey through the LeetCode stock trading problems, today we're tackling "Best Time to Buy and Sell Stock III". If you haven't read my earlier posts, check out [part 1](/2023/06/15/best-time-to-buy-and-sell-stock/) and [part 2](/2023/06/16/best-time-to-buy-and-sell-stock-ii/) first.
+Hey folks! Continuing our journey through the LeetCode stock trading problems, today we're tackling "Best Time to Buy and Sell Stock III". If you haven't read my earlier posts, check out [part 1](/2025/04/15/best-time-to-buy-and-sell-stock/) and [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/) first.
 
 ## The Problem
 
 [Problem on LeetCode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/)
 
-You are given an array prices where prices[i] is the price of a given stock on the ith day.
-Find the maximum profit you can achieve. You may complete at most two transactions.
-Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+> You are given an array prices where prices[i] is the price of a given stock on the ith day.
+> Find the maximum profit you can achieve. You may complete at most two transactions.
+> Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
 
 For example, with prices [3,3,5,0,0,3,1,4]:
 - Buy on day 4 (price = 0)
@@ -128,4 +128,4 @@ I'm starting to see a pattern here. This approach could be extended for k transa
 
 This problem was definitely a step up in complexity from the first two. The limitation of only two transactions forces us to think more carefully about the optimal points to buy and sell. Dynamic programming provides a clean solution by tracking the state at each step.
 
-I'm looking forward to tackling [the next problem](/2023/06/18/best-time-to-buy-and-sell-stock-iv/) where we'll generalize to k transactions. See you then! 
+I'm looking forward to tackling [the next problem](/2025/04/15/best-time-to-buy-and-sell-stock-iv/) where we'll generalize to k transactions. See you then! 

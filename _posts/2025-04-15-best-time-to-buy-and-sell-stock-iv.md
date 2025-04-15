@@ -3,15 +3,15 @@ layout: post
 title: Best Time to Buy and Sell Stock IV - At Most k Transactions
 ---
 
-Hello everyone! We're now on part 4 of our LeetCode stock trading series. If you're just joining, you might want to check out the previous posts: [part 1](/2023/06/15/best-time-to-buy-and-sell-stock/), [part 2](/2023/06/16/best-time-to-buy-and-sell-stock-ii/), and [part 3](/2023/06/17/best-time-to-buy-and-sell-stock-iii/).
+Hello everyone! We're now on part 4 of our LeetCode stock trading series. If you're just joining, you might want to check out the previous posts: [part 1](/2025/04/15/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), and [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/).
 
 ## The Problem
 
 [Problem on LeetCode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/)
 
-You are given an integer array prices where prices[i] is the price of a given stock on the ith day, and an integer k.
-Find the maximum profit you can achieve. You may complete at most k transactions: i.e. you may buy at most k times and sell at most k times.
-Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+> You are given an integer array prices where prices[i] is the price of a given stock on the ith day, and an integer k.
+> Find the maximum profit you can achieve. You may complete at most k transactions: i.e. you may buy at most k times and sell at most k times.
+> Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
 
 For example, with prices [3,2,6,5,0,3] and k = 2:
 - Buy on day 2 (price = 2)
@@ -167,4 +167,4 @@ The optimization to handle large k values is important - if k is at least n/2, w
 
 This has been the most challenging problem in the series so far. It requires us to carefully track our states and understand the transitions. The key insight is to handle the buy and sell states separately, and to optimize for the case when k is large.
 
-In the [next post](/2023/06/19/best-time-to-buy-and-sell-stock-with-cooldown/), we'll look at a variation with a cooldown period after selling. Stay tuned! 
+In the [next post](/2025/04/15/best-time-to-buy-and-sell-stock-with-cooldown/), we'll look at a variation with a cooldown period after selling. Stay tuned! 

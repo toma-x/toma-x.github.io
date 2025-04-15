@@ -3,16 +3,16 @@ layout: post
 title: Best Time to Buy and Sell Stock with Cooldown
 ---
 
-Hey everyone! We're now at part 5 of our stock trading LeetCode series. Check out the previous posts if you missed them: [part 1](/2023/06/15/best-time-to-buy-and-sell-stock/), [part 2](/2023/06/16/best-time-to-buy-and-sell-stock-ii/), [part 3](/2023/06/17/best-time-to-buy-and-sell-stock-iii/), and [part 4](/2023/06/18/best-time-to-buy-and-sell-stock-iv/).
+Hey everyone! We're now at part 5 of our stock trading LeetCode series. Check out the previous posts if you missed them: [part 1](/2025/04/15/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/), and [part 4](/2025/04/15/best-time-to-buy-and-sell-stock-iv/).
 
 ## The Problem
 
 [Problem on LeetCode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
 
-You are given an array prices where prices[i] is the price of a given stock on the ith day.
-Find the maximum profit you can achieve. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times) with the following restrictions:
-After you sell your stock, you cannot buy stock on the next day (i.e., cooldown one day).
-Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+> You are given an array prices where prices[i] is the price of a given stock on the ith day.
+> Find the maximum profit you can achieve. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times) with the following restrictions:
+> After you sell your stock, you cannot buy stock on the next day (i.e., cooldown one day).
+> Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
 
 For example, with prices [1,2,3,0,2]:
 - Buy on day 1 (price = 1)
@@ -154,4 +154,4 @@ The cooldown constraint adds an interesting layer of complexity to the stock tra
 
 Dynamic programming again proves to be a powerful approach for these types of problems, allowing us to break down the complex decision-making process into manageable steps.
 
-In the [final post](/2023/06/20/best-time-to-buy-and-sell-stock-with-transaction-fee/) of this series, we'll tackle a variation where there's a transaction fee for each trade. See you then! 
+In the [final post](/2025/04/15/best-time-to-buy-and-sell-stock-with-transaction-fee/) of this series, we'll tackle a variation where there's a transaction fee for each trade. See you then! 

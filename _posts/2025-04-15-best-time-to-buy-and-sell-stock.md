@@ -9,9 +9,10 @@ Hey there! Today I thought I'd write about one of the classic LeetCode problems 
 
 [Problem on LeetCode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)
 
-You are given an array prices where prices[i] is the price of a given stock on the ith day.
-You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
-Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
+
+> You are given an array prices where prices[i] is the price of a given stock on the ith day.
+> You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
+> Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
 
 For example, if you have prices [7,1,5,3,6,4]:
 - Buy on day 2 (price = 1)
@@ -76,4 +77,4 @@ I haven't mastered dynamic programming yet, but this problem helped me understan
 
 This problem is a good introduction to the stock trading series on LeetCode. It teaches an important lesson: sometimes we don't need elaborate data structures or complex algorithms - just a careful tracking of a few key values as we iterate through the data.
 
-In my [next post](/2023/06/16/best-time-to-buy-and-sell-stock-ii/), I'll tackle the follow-up problem where we can make multiple transactions. Stay tuned! 
+In my [next post](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), I'll tackle the follow-up problem where we can make multiple transactions. Stay tuned! 
