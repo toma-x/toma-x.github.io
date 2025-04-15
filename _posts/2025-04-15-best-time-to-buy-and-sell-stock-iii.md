@@ -9,10 +9,11 @@ Hey folks! Continuing our journey through the LeetCode stock trading problems, t
 
 [Problem on LeetCode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/)
 
->
+<blockquote>
 You are given an array prices where prices[i] is the price of a given stock on the ith day.
 Find the maximum profit you can achieve. You may complete at most two transactions.
 Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+</blockquote>
 
 For example, with prices [3,3,5,0,0,3,1,4]:
 - Buy on day 4 (price = 0)
