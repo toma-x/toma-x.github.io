@@ -97,6 +97,7 @@ h1, h2, h3, h4, h5, h6 {
   padding-top:    1rem;
   padding-bottom: 1rem;
   margin-bottom: 3rem;
+  border: none;
 }
 .masthead-title {
   margin-top: 0;
