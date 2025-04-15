@@ -9,9 +9,10 @@ Hello everyone! We're now on part 4 of our LeetCode stock trading series. If you
 
 [Problem on LeetCode](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/)
 
-> You are given an integer array prices where prices[i] is the price of a given stock on the ith day, and an integer k.
-> Find the maximum profit you can achieve. You may complete at most k transactions: i.e. you may buy at most k times and sell at most k times.
-> Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+>
+You are given an integer array prices where prices[i] is the price of a given stock on the ith day, and an integer k.
+Find the maximum profit you can achieve. You may complete at most k transactions: i.e. you may buy at most k times and sell at most k times.
+Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
 
 For example, with prices [3,2,6,5,0,3] and k = 2:
 - Buy on day 2 (price = 2)
