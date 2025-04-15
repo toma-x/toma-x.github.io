@@ -3,7 +3,7 @@ layout: post
 title: Best Time to Buy and Sell Stock IV - At Most k Transactions
 ---
 
-Hello everyone! We're now on part 4 of our LeetCode stock trading series. If you're just joining, you might want to check out the previous posts: [part 1](/2025/04/15/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), and [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/).
+Hello everyone! We're now on part 4 of our LeetCode stock trading series. If you're just joining, you might want to check out the previous posts: [part 1](/2025/04/14/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), and [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/).
 
 ## The Problem
 

@@ -3,7 +3,7 @@ layout: post
 title: Best Time to Buy and Sell Stock with Transaction Fee
 ---
 
-Hi all! Welcome to the final installment of my LeetCode stock trading problem series. If you're joining in the middle, be sure to check out the previous posts: [part 1](/2025/04/15/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/), [part 4](/2025/04/15/best-time-to-buy-and-sell-stock-iv/), and [part 5](/2025/04/15/best-time-to-buy-and-sell-stock-with-cooldown/).
+Hi all! Welcome to the final installment of my LeetCode stock trading problem series. If you're joining in the middle, be sure to check out the previous posts: [part 1](/2025/04/14/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/), [part 4](/2025/04/15/best-time-to-buy-and-sell-stock-iv/), and [part 5](/2025/04/15/best-time-to-buy-and-sell-stock-with-cooldown/).
 
 ## The Problem
 

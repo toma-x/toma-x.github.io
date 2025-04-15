@@ -4,26 +4,31 @@ title: About
 ---
 
 <p class="message">
-  Hey there! This page is included as an example. Feel free to customize it for your own use upon downloading. Carry on!
+  Welcome to my blog! I'm a mathematics master's student in Paris with interests in mathematics, finance and machine learning topics.
 </p>
 
-In the novel, *The Strange Case of Dr. Jeykll and Mr. Hyde*, Mr. Poole is Dr. Jekyll's virtuous and loyal butler. Similarly, Poole is an upstanding and effective butler that helps you build Jekyll themes. It's made by [@mdo](https://twitter.com/mdo).
+## Background
 
-There are currently two themes built on Poole:
+I'm currently completing my master's degree in Financial Mathematics in Paris, where I focus on the intersection of mathematical theory and practical financial applications.
 
-* [Hyde](http://hyde.getpoole.com)
-* [Lanyon](http://lanyon.getpoole.com)
+## Interests
 
-Learn more and contribute on [GitHub](https://github.com/poole).
+Beyond finance, I'm deeply fascinated by:
 
-## Setup
+* **Machine Learning** — Exploring algorithms, neural networks, and practical applications
+* **Mathematical Challenges** — Solving complex problems and puzzles
+* **Programming** — Implementing mathematical concepts through code
 
-Some fun facts about the setup of this project include:
+## Blog Focus
 
-* Built for [Jekyll](https://jekyllrb.com)
-* Developed on GitHub and hosted for free on [GitHub Pages](https://pages.github.com)
-* Coded with [Atom](https://atom.io)
+This blog serves as a platform where I share:
 
-Have questions or suggestions? Feel free to [open an issue on GitHub](https://github.com/poole/issues/new) or [ask me on Twitter](https://twitter.com/mdo).
+* Interesting mathematical problems and my (non optimal) solutions
+* Programming challenges I've encountered
+* Applications of machine learning techniques
 
-Thanks for reading!
+## Connect
+
+Feel free to reach out through [GitHub](https://github.com/toma-x) or [LinkedIn](https://linkedin.com/in/thomas-treillard).
+
+Thanks for visiting!

@@ -3,7 +3,7 @@ layout: post
 title: Best Time to Buy and Sell Stock II - Multiple Transactions
 ---
 
-Hi again! Following up on my [previous post](/2025/04/15/best-time-to-buy-and-sell-stock/) about the first stock trading problem, today I'm going to talk about "Best Time to Buy and Sell Stock II". This version introduces a new twist to the problem.
+Hi again! Following up on my [previous post](/2025/04/14/best-time-to-buy-and-sell-stock/) about the first stock trading problem, today I'm going to talk about "Best Time to Buy and Sell Stock II". This version introduces a new twist to the problem.
 
 ## The Problem
 

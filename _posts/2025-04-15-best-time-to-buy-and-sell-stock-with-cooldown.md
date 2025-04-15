@@ -3,7 +3,7 @@ layout: post
 title: Best Time to Buy and Sell Stock with Cooldown
 ---
 
-Hey everyone! We're now at part 5 of our stock trading LeetCode series. Check out the previous posts if you missed them: [part 1](/2025/04/15/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/), and [part 4](/2025/04/15/best-time-to-buy-and-sell-stock-iv/).
+Hey everyone! We're now at part 5 of our stock trading LeetCode series. Check out the previous posts if you missed them: [part 1](/2025/04/14/best-time-to-buy-and-sell-stock/), [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/), [part 3](/2025/04/15/best-time-to-buy-and-sell-stock-iii/), and [part 4](/2025/04/15/best-time-to-buy-and-sell-stock-iv/).
 
 ## The Problem
 

@@ -3,7 +3,7 @@ layout: post
 title: Best Time to Buy and Sell Stock III - At Most Two Transactions
 ---
 
-Hey folks! Continuing our journey through the LeetCode stock trading problems, today we're tackling "Best Time to Buy and Sell Stock III". If you haven't read my earlier posts, check out [part 1](/2025/04/15/best-time-to-buy-and-sell-stock/) and [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/) first.
+Hey folks! Continuing our journey through the LeetCode stock trading problems, today we're tackling "Best Time to Buy and Sell Stock III". If you haven't read my earlier posts, check out [part 1](/2025/04/14/best-time-to-buy-and-sell-stock/) and [part 2](/2025/04/15/best-time-to-buy-and-sell-stock-ii/) first.
 
 ## The Problem
 
