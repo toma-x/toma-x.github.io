@@ -17,7 +17,7 @@
     {% endcomment %}
 
     {% assign pages_list = site.pages | sort: "url" %}
-    {% assign posts_list = site.posts | sort: "url" %}
+    {% assign posts_list = site.posts | sort: "url" | reverse | slice: 0, 10 %}
 
     {% for node in pages_list %}
       {% if node.title and node.layout == "page" %}
