@@ -4,8 +4,7 @@ title: Home
 ---
 
 <div class="posts">
-  {% assign max_posts = paginator.posts | slice: 0, 3 %}
-  {% for post in max_posts %}
+  {% for post in paginator.posts %}
   <div class="post">
     <h1 class="post-title">
       <a href="{{ post.url | absolute_url }}">
@@ -21,11 +20,16 @@ title: Home
 </div>
 
 <div class="pagination">
-  {% if paginator.next_page %}
-    <a class="pagination-item older" href="{{ paginator.next_page_path | absolute_url }}">Older</a>
+  {% if paginator.page < 3 %}
+    {% if paginator.next_page and paginator.next_page <= 3 %}
+      <a class="pagination-item older" href="{{ paginator.next_page_path | absolute_url }}">Older</a>
+    {% else %}
+      <span class="pagination-item older">Older</span>
+    {% endif %}
   {% else %}
     <span class="pagination-item older">Older</span>
   {% endif %}
+
   {% if paginator.previous_page %}
     {% if paginator.page == 2 %}
       <a class="pagination-item newer" href="{{ '/' | absolute_url }}">Newer</a>
