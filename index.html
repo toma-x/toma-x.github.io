@@ -1,34 +1,37 @@
 ---
-layout: page
-title: Home
+layout: block
+title: Recent Post
 ---
 
-<p class="message">
-  Welcome to my blog! I'm a mathematics master's student in Paris with interests in mathematics, finance and machine learning topics.
-</p>
+<div class="posts">
+  {% for post in paginator.posts %}
+  <div class="post">
+    <h1 class="post-title">
+      <a href="{{ post.url | absolute_url }}">
+        {{ post.title }}
+      </a>
+    </h1>
 
-## Background
+    <!-- <span class="post-date">{{ post.date | date_to_string }}</span> -->
 
-I'm currently completing my master's degree in Financial Mathematics in Paris, where I focus on the intersection of mathematical theory and practical financial applications.
+    {{ post.content }}
+  </div>
+  {% endfor %}
+</div>
 
-## Interests
-
-Beyond finance, I'm deeply fascinated by:
-
-* **Machine Learning** — Exploring algorithms, neural networks, and practical applications
-* **Mathematical Challenges** — Solving complex problems and puzzles
-* **Programming** — Implementing mathematical concepts through code
-
-## Blog Focus
-
-This blog serves as a platform where I share:
-
-* Interesting mathematical problems and my (non optimal) solutions
-* Programming challenges I've encountered
-* Applications of machine learning techniques
-
-## Connect
-
-Feel free to reach out through [GitHub](https://github.com/toma-x) or [LinkedIn](https://linkedin.com/in/thomas-treillard).
-
-Thanks for visiting!
+<div class="pagination">
+  {% if paginator.next_page %}
+    <a class="pagination-item older" href="{{ paginator.next_page_path | absolute_url }}">Older</a>
+  {% else %}
+    <span class="pagination-item older">Older</span>
+  {% endif %}
+  {% if paginator.previous_page %}
+    {% if paginator.page == 2 %}
+      <a class="pagination-item newer" href="{{ '/' | absolute_url }}">Newer</a>
+    {% else %}
+      <a class="pagination-item newer" href="{{ paginator.previous_page_path | absolute_url }}">Newer</a>
+    {% endif %}
+  {% else %}
+    <span class="pagination-item newer">Newer</span>
+  {% endif %}
+</div>
