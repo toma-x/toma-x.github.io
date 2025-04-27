@@ -17,7 +17,7 @@
     {% endcomment %}
 
     {% assign pages_list = site.pages | sort: "url" %}
-    {% assign posts_list = site.posts | sort: "url" | reverse | slice: 0, 4 %}
+    <!-- {% assign posts_list = site.posts | sort: "url" | reverse | slice: 0, 4 %} -->
 
     {% for node in pages_list %}
       {% if node.title and node.layout == "page" %}
@@ -25,15 +25,11 @@
       {% endif %}
     {% endfor %}
     
-    {% for post in posts_list %}
+    <!-- {% for post in posts_list %}
       {% if post.title %}
         <a class="sidebar-nav-item{% if page.url == post.url %} active{% endif %}" href="{{ post.url | absolute_url }}">{{ post.title }}</a>
       {% endif %}
-    {% endfor %}
+    {% endfor %} -->
     
-    
-    
-    
-
   </nav>
 </div>
