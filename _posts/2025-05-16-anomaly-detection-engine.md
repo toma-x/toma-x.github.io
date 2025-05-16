@@ -3,200 +3,186 @@ layout: post
 title: Real-time Anomaly Detection Engine
 ---
 
-## Building a Real-time Anomaly Detection Engine for Financial Data
+It's been a while since I've updated the blog, mostly because I've been buried in what turned out to be a pretty complex project: building a real-time anomaly detection engine for financial tick data. The idea started fairly simply – could I build something that spots unusual movements in stock prices as they happen? It turned out to be a journey with a steep learning curve, especially when it came to integrating everything.
 
-This semester, I decided to dive deep into a project that combined a few areas I’ve been keen on exploring: real-time data processing, machine learning, and financial markets. The goal was to build an anomaly detection system that could analyze streaming financial tick data. It’s been quite a journey, with a fair share of headaches and a few moments of actual triumph.
+### The Core Idea: Catching Anomalies in Financial Streams
 
-### The Spark: Why Anomaly Detection in Tick Data?
+The goal was to process a stream of financial tick data – essentially, every price change – and flag anything that looked out of the ordinary. This kind of system could be useful for algorithmic trading or just for getting a quick heads-up on weird market behavior. I decided to build it in Python because of its strong data science libraries and general ease of use for a project like this.
 
-The idea came about after a guest lecture in my "Data Mining" course. We touched upon fraud detection and how unusual patterns can signify critical events. Financial tick data, with its high velocity and volume, seemed like a perfect candidate for applying these concepts. Identifying sudden, anomalous price or volume movements in real-time could, in theory, signal market manipulation, system glitches, or the initial ripples of a major news event. This project felt like a practical way to apply machine learning to a dynamic dataset.
+The initial plan was to use some kind of time-series model to learn what "normal" tick data looks like and then identify deviations. I knew I'd need something that could handle sequential data effectively.
 
-### Getting Off the Ground: Python and Initial Design Thoughts
+### Model Selection and Initial Hurdles with Vertex AI
 
-I decided to build the system primarily in Python. My familiarity with it from other coursework, plus the rich ecosystem of libraries like Pandas, NumPy, and Scikit-learn, made it a natural choice. For the machine learning part, I knew I wanted to eventually leverage cloud capabilities for training, and I’d heard good things about Google Cloud's Vertex AI from a senior who used it for their capstone.
+I decided to use an LSTM Autoencoder for anomaly detection. [12, 15, 26] LSTMs are good with sequences, and autoencoders are designed to reconstruct their input – the idea is that if the model is trained on normal data, it'll do a poor job reconstructing anomalous data, and the reconstruction error can be our anomaly score. [15, 26]
 
-My initial plan for handling "streaming" data was pretty basic. I wasn't ready to tackle something like Kafka or Spark Streaming right out of the gate for a personal project. I figured I could simulate a stream by reading data line-by-line from a CSV file, or perhaps have a script appending to a file that my main engine would monitor. This felt manageable for a first iteration.
+This is where Vertex AI came into the picture. [8, 28] I'd used it before for some smaller, more straightforward tabular models with AutoML, but this was my first real dive into custom model training on the platform. [10, 22] The documentation made it seem straightforward enough: package your training code, configure a training job, and let Vertex AI handle the rest. [9, 19]
 
-For anomaly detection, I initially considered statistical methods like Z-score or ARIMA-based approaches. While robust, I was curious about using a neural network, specifically an autoencoder. The concept of training a model to reconstruct "normal" data and then flagging data points with high reconstruction errors as anomalous seemed really elegant.
+My first big hurdle was just getting the environment right for the custom training job. Vertex AI has pre-built containers for TensorFlow, which was what I was using for the LSTM. [9, 10] But I quickly realized that managing dependencies and making sure my training script (`task.py` as they often call it in the examples) could actually find my data and write the model artifacts to the right Cloud Storage bucket was trickier than I anticipated. [18, 19]
 
-### Wrestling with Data: Ingestion and Preprocessing
+I remember spending a good chunk of time debugging `gcloud ai custom-jobs create` commands. The official docs and a few blog posts were helpful, but a lot of it was trial and error. [10, 11] One specific issue I ran into was with the `--python-module` flag. My directory structure for the trainer package was initially a bit messy, and it took a few tries to get Vertex AI to correctly locate my `trainer.task` module.
 
-The first major hurdle was getting and preparing the data. I found a publicly available dataset of mock Forex tick data. It wasn't perfect – it had some gaps and the occasional malformed line, but it was good enough to start with.
+I consulted a few resources on structuring the training application. [18] Eventually, I settled on a fairly standard layout:
 
-Each tick generally had a timestamp, symbol, bid price, and ask price. I decided to focus on price movements and volume (though the initial dataset only had price, so I had to synthesize volume for some experiments, or simplify my features).
-
-My preprocessing pipeline, built with Pandas, looked something like this:
-1.  Load the data, parse timestamps.
-2.  Calculate features: I started simple with price changes (deltas) and moving averages over very short windows (e.g., 5-10 ticks).
-3.  Normalize the features: Neural networks generally prefer input data to be scaled, so I used `MinMaxScaler` from Scikit-learn. This was crucial, and I remember spending a good hour debugging why my initial model wasn't converging, only to realize I'd forgotten to scale one of the new features I added.
-
-Here’s a snippet of how I was handling new incoming data points in my simulation. It's not the most optimized, but it got the job done for development:
-
-```python
-import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
-
-# Assume scaler is already fit on some historical training data
-# scaler = MinMaxScaler()
-# scaler.fit(historical_data[['price_diff', 'short_ma']])
-
-# a small buffer to calculate moving averages for incoming ticks
-tick_buffer = []
-WINDOW_SIZE = 10 # for moving average
-
-def preprocess_tick(tick_data_dict):
-    global tick_buffer
-    # tick_data_dict is like {'timestamp': 1678886400.0, 'price': 1.0800}
-
-    current_price = tick_data_dict['price']
-    
-    if not tick_buffer: # first tick
-        tick_buffer.append(current_price)
-        return None # not enough data yet
-
-    prev_price = tick_buffer[-1]
-    price_diff = current_price - prev_price
-    
-    tick_buffer.append(current_price)
-    if len(tick_buffer) > WINDOW_SIZE:
-        tick_buffer.pop(0) # keep buffer size constrained
-
-    if len(tick_buffer) < WINDOW_SIZE: # not enough for MA
-        return None 
-
-    # calculate a simple moving average
-    short_ma = sum(tick_buffer) / len(tick_buffer)
-    
-    # create a DataFrame for scaling - this felt a bit clunky
-    # but made it consistent with how I trained the scaler
-    feature_df = pd.DataFrame([[price_diff, short_ma]], columns=['price_diff', 'short_ma'])
-    
-    # scaled_features = scaler.transform(feature_df)
-    # for now, just returning the raw features, scaling would happen before model input
-    # return scaled_features 
-    return {'price_diff': price_diff, 'short_ma': short_ma, 'original_price': current_price}
-
-# Example usage for a new tick:
-# new_tick = {'timestamp': 123456789.0, 'price': 1.12345}
-# processed_features = preprocess_tick(new_tick)
-# if processed_features:
-#     print(f"Processed features: {processed_features}")
 ```
-I remember the `tick_buffer` logic took a few tries to get right, especially handling the initial ticks before the buffer was full. Forgetting to pop from the buffer initially led to it growing indefinitely and my moving averages being skewed. Classic mistake.
+anomaly_trainer/
+├── trainer/
+│   ├── __init__.py
+│   ├── task.py       # Main training script
+│   ├── model.py      # LSTM Autoencoder definition
+│   └── utils.py      # Data preprocessing functions
+└── setup.py
+```
 
-### Into the Cloud: Model Training with Vertex AI
-
-This was the part I was most excited and nervous about. I decided to build an autoencoder using TensorFlow and Keras. My architecture was fairly simple: an input layer, a few dense encoding layers, a bottleneck layer, a few dense decoding layers, and an output layer. The goal was for the output layer to reconstruct the input features.
+The `model.py` contained the Keras model definition. Something along these lines, though it evolved a bit:
 
 ```python
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, LSTM, RepeatVector, TimeDistributed, Dense
 
-def build_autoencoder(input_dim, encoding_dim=16):
-    #
-    # input_dim is the number of features
-    input_layer = Input(shape=(input_dim,))
+def create_lstm_autoencoder(timesteps, n_features):
+    # Define the encoder
+    inputs = Input(shape=(timesteps, n_features))
+    # Enc_lstm_1 layer learns to compress the input sequence
+    enc_lstm_1 = LSTM(128, activation='relu', return_sequences=True)(inputs)
+    enc_lstm_2 = LSTM(64, activation='relu', return_sequences=False)(enc_lstm_1) # Only last output
     
-    # Encoder
-    encoded = Dense(64, activation='relu')(input_layer)
-    encoded = Dense(32, activation='relu')(encoded)
-    encoded = Dense(encoding_dim, activation='relu')(encoded) # Bottleneck
+    # The bottleneck layer, captures the compressed representation
+    bottleneck = RepeatVector(timesteps)(enc_lstm_2)
+    
+    # Define the decoder
+    dec_lstm_1 = LSTM(64, activation='relu', return_sequences=True)(bottleneck)
+    dec_lstm_2 = LSTM(128, activation='relu', return_sequences=True)(dec_lstm_1)
+    # Output layer reconstructs the original input shape
+    output = TimeDistributed(Dense(n_features))(dec_lstm_2)
+    
+    model = Model(inputs=inputs, outputs=output)
+    model.compile(optimizer='adam', loss='mse')
+    return model
 
-    # Decoder
-    decoded = Dense(32, activation='relu')(encoded)
-    decoded = Dense(64, activation='relu')(decoded)
-    decoded = Dense(input_dim, activation='sigmoid')(decoded) # Sigmoid because inputs are scaled 0-1
-
-    autoencoder = Model(input_layer, decoded)
-    autoencoder.compile(optimizer='adam', loss='mse') # Mean Squared Error for reconstruction
-    return autoencoder
-
-# Later, when I had my preprocessed training data (X_train_scaled)
-# INPUT_DIM = X_train_scaled.shape
-# ae_model = build_autoencoder(INPUT_DIM)
-# print(ae_model.summary())
+# Later in task.py, I'd call this:
+# TIMESTEPS = 60 # Using 1 minute of tick data (assuming 1 tick per second)
+# N_FEATURES = 1 # Just using price for now
+# lstm_ae_model = create_lstm_autoencoder(TIMESTEPS, N_FEATURES)
 ```
-Getting the `input_dim` right and ensuring the final activation was `sigmoid` (because my `MinMaxScaler` scaled features to [0,1]) were small but crucial details. I initially used `relu` on the output layer by mistake, and the loss just wouldn't go down meaningfully.
+I initially tried a simpler architecture with fewer layers and units, but the reconstruction error on even the training data was too high. I found a few papers and some GitHub repositories that used a similar stacked LSTM approach for anomaly detection, which gave me more confidence in this direction. [12, 15, 23] One particular GitHub repo, "LSTM-Autoencoder-for-Anomaly-Detection" by BLarzalere, was a useful reference, though I had to adapt it quite a bit for my specific tick data format and Vertex AI integration. [12]
 
-Training this locally was fine for small datasets, but I wanted to learn Vertex AI. The process involved:
-1.  Writing my TensorFlow training script.
-2.  Containerizing it with Docker. This was a bit of a learning curve. I found a helpful guide on the Google Cloud documentation for structuring the Dockerfile for custom training.
-3.  Uploading my training data (a CSV of preprocessed normal tick sequences) to a Google Cloud Storage bucket.
-4.  Using the `gcloud ai custom-jobs create` command to submit the training job to Vertex AI.
+Training the model on Vertex AI was an iterative process. [9] I started with a small subset of my tick data to make sure the pipeline worked, then gradually scaled up. The ability to just change the machine type for the training job without rewriting my code was a huge plus. Monitoring the training logs in Cloud Logging was essential. I learned the hard way that not saving the model frequently enough during a long training run on a pre-emptible VM can be... frustrating.
 
-The first few attempts failed. I had issues with package versions in my `requirements.txt` for the Docker container. Then I had a path issue where my script couldn't find the data from the GCS bucket. The Vertex AI logs were my best friend here, even if sometimes cryptic. I recall a "permission denied" error that took me ages to solve, eventually realizing my Vertex AI service account needed "Storage Object Viewer" IAM role on the bucket. A StackOverflow thread about Vertex AI IAM roles finally pointed me in the right direction.
+### Dealing with Data: Streaming and Preprocessing
 
-After a successful training run, I saved the model (the `SavedModel` format) to my GCS bucket.
+Financial tick data is notoriously noisy and comes in at high velocity. [1, 6] For this project, I simulated a stream using a historical dataset, but the system was designed with the idea of eventually connecting to a live feed.
 
-### The Engine Room: Real-time Anomaly Detection Logic
+The preprocessing was a significant part of the work. I had to:
+1.  **Normalize the data:** Neural networks generally prefer inputs in a small range, typically 0 to 1 or -1 to 1. I used MinMaxScaler from scikit-learn.
+2.  **Create sequences:** LSTMs need input in the form of sequences. I decided to use a sliding window approach, where each input sequence would be, say, 60 ticks (representing one minute if ticks were per second), and the model would try to reconstruct that sequence.
 
-With a trained autoencoder, the next step was to use it. The core idea is to feed new, preprocessed tick data into the autoencoder and calculate the reconstruction error (Mean Squared Error between input and output). If this error exceeds a certain threshold, the tick is flagged as an anomaly.
+My `utils.py` had a function something like this:
 
 ```python
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
-# ae_model would be loaded from the trained model artifact
-# threshold would be determined empirically from a validation set
+# scaler = MinMaxScaler(feature_range=(0, 1)) # Fit this on training data only
 
-def is_anomaly(model, data_point_scaled, threshold):
-    #
-    # data_point_scaled needs to be reshaped for the model
-    # it expects a batch, even if it's a batch of 1
-    data_point_reshaped = np.reshape(data_point_scaled, (1, data_point_scaled.shape))
-    reconstruction = model.predict(data_point_reshaped)
-    mse = np.mean(np.power(data_point_scaled - reconstruction, 2))
-    
-    # print(f"Input: {data_point_scaled}, Reconstruction: {reconstruction}, MSE: {mse}") # for debugging
-    if mse > threshold:
-        return True, mse
-    return False, mse
+def create_sequences(data, timesteps):
+    # data is expected to be a 1D numpy array of prices
+    X = []
+    # scaled_data = scaler.transform(data.reshape(-1,1)) # Ensure data is 2D for scaler
+    # For this project, let's assume data is already scaled and 1D for simplicity here
+    # In reality, scaling would happen before this, and be fit only on training data
+    for i in range(len(data) - timesteps):
+        X.append(data[i:(i + timesteps)])
+    return np.array(X)
 
-# Example:
-# Assume `new_scaled_features` is the output from preprocessing and scaling a new tick
-# anomaly_status, error_val = is_anomaly(ae_model, new_scaled_features, ANOMALY_THRESHOLD)
-# if anomaly_status:
-#     print(f"ANOMALY DETECTED! MSE: {error_val}")
+# Example usage if I were processing a batch:
+# raw_tick_prices = fetch_some_tick_data() [...]
+# scaled_prices = scaler.fit_transform(raw_tick_prices.reshape(-1,1)).flatten() # Fit and transform
+# sequences = create_sequences(scaled_prices, TIMESTEPS)
+# sequences = sequences.reshape((sequences.shape, sequences.shape, N_FEATURES)) # Reshape for LSTM
 ```
-Determining the `ANOMALY_THRESHOLD` was an iterative process. I ran my model over a validation set of "normal" data, calculated their reconstruction errors, and then chose a threshold that was, say, above the 99th percentile of these errors. This was a bit of trial and error. Too low, and I got too many false positives. Too high, and I missed actual (simulated) anomalies.
+A key moment of confusion was whether to fit the scaler on the entire dataset or just the training portion. StackOverflow and various machine learning blogs were quite clear: *only fit on the training data* and then use that *fitted* scaler to transform the validation and test sets (and future incoming data). This prevents data leakage from the test set into the training process.
 
-For the "streaming" part, I ended up writing a Python script that would `tail -f` a CSV file. New lines appended to this CSV (by another dummy script simulating a data feed) would be read, preprocessed, and passed to the `is_anomaly` function. It’s not enterprise-grade, but it served its purpose for the project.
+Another challenge was handling the sheer volume of tick data. [1, 6] Even for backtesting, loading and preprocessing large CSV files of tick data was slow. I experimented with using `pandas` chunking to process data in smaller pieces.
 
-### Deployment to a Unix Server
+### Deployment to a Unix Server and Real-time Processing
 
-I have a small Linux VM (Ubuntu) that I use for projects, so that became my "Unix server." Deployment involved:
-1.  `scp`-ing my Python scripts, the trained model file (downloaded from GCS), and the fitted `MinMaxScaler` object (saved using `joblib`) to the server.
-2.  Setting up a Python virtual environment (`python3 -m venv env`) and installing dependencies from `requirements.txt`. This hit a snag because the server had an older version of `pip` that struggled with some `tensorflow` dependencies until I upgraded `pip` itself within the venv.
-3.  Running the main detection script. Initially, I just ran it in the foreground. For longer tests, I used `nohup python main_detector.py &` to keep it running after I logged out of SSH. Using `screen` was also an option I considered for easier management.
+Once I had a trained model on Vertex AI, the next step was deploying it. [10, 14] I created an endpoint on Vertex AI for the model. [2, 8, 14] This was surprisingly straightforward using the `gcloud ai endpoints deploy-model` command or the Python SDK. [2, 5, 14]
 
-One issue I ran into was file paths. My local paths were different from the server paths, so I had to make sure my scripts used relative paths or configurable absolute paths for loading the model and scaler.
+The "real-time" part of the project involved a Python script running on a Unix server. This script would:
+1.  Simulate receiving new tick data (in a real-world scenario, this would come from a WebSocket, a message queue like Kafka, or an API).
+2.  Preprocess the latest window of ticks (normalize, create a sequence).
+3.  Send this sequence to the Vertex AI endpoint for prediction. [2, 4]
+4.  Get the reconstructed sequence back from the model.
+5.  Calculate the Mean Squared Error (MSE) between the input sequence and the reconstructed sequence.
+6.  If the MSE was above a certain threshold (determined by looking at reconstruction errors on a validation set of normal data), flag it as an anomaly.
 
-### Moments of Frustration and Little Victories
+Here’s a snippet of what the prediction client looked like (simplified, of course):
 
-There were plenty of times I felt stuck.
-*   **NaNs are the Enemy:** For a while, my preprocessing pipeline was mysteriously producing `NaN` values. This, of course, made TensorFlow very unhappy. It turned out to be an edge case in my moving average calculation when the input data had consecutive identical prices, leading to a zero division somewhere if not handled carefully or if a feature relied on variance. Lots of `print()` statements and `pdb` (Python debugger) sessions helped track that down.
-*   **Vertex AI IAM Maze:** As mentioned, the IAM permissions for Vertex AI to access GCS buckets. The error messages weren't always super clear about *which* service account needed *which* permission. Reading through Google Cloud documentation on service accounts and roles was essential, but felt like navigating a maze at times.
-*   **The Threshold Balancing Act:** Setting the anomaly threshold felt more like an art than a science initially. I spent a lot of time plotting reconstruction errors and trying to find that sweet spot. I remember reading a blog post – can't recall where now, probably towardsdatascience.com – about dynamic thresholding, which is something I'd explore if I had more time.
-*   **The Breakthrough:** The biggest "aha!" moment was seeing the first true positive anomaly get flagged correctly based on a spike I manually inserted into my test data stream. After all the setup, coding, and debugging, seeing the `ANOMALY DETECTED!` message with a high MSE was incredibly satisfying.
+```python
+from google.cloud import aiplatform
+# from google.oauth2 import service_account # For auth if not on GCP, or for service accounts
 
-### Where It Stands and What's Next
+# endpoint_name = "projects/YOUR_PROJECT_ID/locations/YOUR_REGION/endpoints/YOUR_ENDPOINT_ID"
+# credentials = service_account.Credentials.from_service_account_file("path/to/your/keyfile.json")
+# client_options = {"api_endpoint": "YOUR_REGION-aiplatform.googleapis.com"}
+# prediction_client = aiplatform.gapic.PredictionServiceClient(client_options=client_options, credentials=credentials)
 
-The system, as it is now, can process a simulated stream of tick data, preprocess it, feed it to a Vertex AI-trained autoencoder, and flag anomalies based on reconstruction error. It’s a good proof-of-concept.
+def get_prediction_vertexai(endpoint_id_full_path, instance_data):
+    # Vertex AI SDK has simplified this a lot recently.
+    # This is more aligned with direct REST/gapic, but SDK `predict` method is easier.
+    # For the SDK:
+    # endpoint = aiplatform.Endpoint(endpoint_name=endpoint_id_full_path)
+    # prediction = endpoint.predict(instances=[instance_data])
+    # return prediction.predictions
 
-Limitations are clear:
-*   The "streaming" is very basic.
-*   The feature engineering is simple.
-*   The anomaly threshold is static.
-*   Error handling and robustness could be significantly improved.
+    # This is a placeholder for the actual prediction call.
+    # In a real script, I'd use the aiplatform.Endpoint.predict() method.
+    # For demonstration, imagine this formats and sends the request.
+    # The instance_data would need to be a list of lists, or a list of dicts
+    # depending on the model's expected input format.
+    # For an LSTM expecting (1, timesteps, features):
+    #reshaped_instance_data = np.array(instance_data).reshape(1, TIMESTEPS, N_FEATURES).tolist()
+    
+    # This part is tricky because the exact format depends on how the model was exported
+    # and what the Vertex AI endpoint expects. I spent a lot of time here.
+    # It usually expects a JSON payload with an "instances" key.
+    # payload = {"instances": reshaped_instance_data}
+    
+    # response = prediction_client.predict(endpoint=endpoint_id_full_path, instances=[payload]) # This needs correct formatting
+    # For an LSTM autoencoder, the "prediction" would be the reconstructed sequence.
+    # For the sake_of_this_example, returning the input
+    print(f"Sending data to endpoint: {instance_data[:5]}...") # Log first 5 data points
+    # This is where the actual call to Vertex AI would be.
+    # The Vertex AI SDK's endpoint.predict() handles a lot of the boilerplate.
+    # For example:
+    # client = aiplatform.gapic.PredictionServiceClient(client_options={"api_endpoint": api_endpoint})
+    # instances = [instance_data] # instance_data should be a list here
+    # parameters_dict = {}
+    # endpoint_path = client.endpoint_path(project="your-project", location="your-region", endpoint="your-endpoint-id")
+    # response = client.predict(endpoint=endpoint_path, instances=instances, parameters=parameters_dict)
+    # reconstructed_sequence = response.predictions
+    # return reconstructed_sequence
+    
+    # Simulating a passthrough for now for blog post brevity
+    return instance_data # In reality, this would be the reconstructed data from the model
+```
+Actually invoking the endpoint from an external Python script reliably took some doing. Authentication was the first step – setting up a service account with the right IAM permissions (Vertex AI User) and pointing to the JSON key file. Then, formatting the request correctly. The `predict()` method of the `aiplatform.Endpoint` class in the `google-cloud-aiplatform` SDK was what I ended up using mostly. [5, 8] It handles the JSON structuring for you, which is a relief. [2]
 
-If I were to continue developing this, I'd look into:
-*   Using a proper streaming framework like Apache Kafka and Flink/Spark Streaming.
-*   More sophisticated feature engineering, perhaps incorporating time-based features or features from multiple correlated symbols.
-*   Exploring more advanced models or ensemble methods. Recurrent Autoencoders (using LSTMs) could be interesting for capturing temporal dependencies better.
-*   Implementing dynamic thresholding.
-*   Building a simple dashboard to visualize the anomalies.
+The Unix server deployment itself was pretty basic for this project. I used `screen` to keep the Python script running in the background. [29] A more robust setup would involve `systemd` or Docker, but for a personal project, `screen` did the job. [21, 25] I found a few StackOverflow threads discussing deploying simple Python scripts to Unix servers, which confirmed this as a reasonable starting point for my needs. [30]
 
-### Final Thoughts
+### Thresholding and "What is an Anomaly?"
 
-This project was a massive learning experience. From the nitty-gritty of data preprocessing and model building in Python to navigating the complexities of a cloud ML platform like Vertex AI and finally deploying it on a simple server, every step had its own set of challenges. It solidified my understanding of machine learning workflows and gave me a real appreciation for the engineering that goes into building even a relatively simple "real-time" system. Definitely one of the more demanding but rewarding projects I’ve tackled.
+One of the "Aha!" moments, or maybe more of a "Oh, that's how it is" moment, was realizing that "anomaly detection" isn't magic. The model gives you a reconstruction error, but *you* have to decide what level of error constitutes an anomaly. [15, 26]
+
+I ran the trained model on a validation set of *normal* data, calculated all the reconstruction errors, and then plotted their distribution. This helped me pick a threshold – say, anything above the 99th percentile of normal reconstruction errors would be flagged. This part felt more like an art than a science and involved some tweaking. I read a blog post on anomaly detection that mentioned using the Mean Absolute Error (MAE) and finding a threshold based on its distribution on normal data, which was a similar approach to my MSE method. [15]
+
+### Challenges and Lessons Learned
+
+*   **Data Quality and Volume:** Financial data is messy. [1, 7] Cleaning it and preparing it for an LSTM takes a lot of effort. The sheer volume can also be a challenge for local development. [6]
+*   **Hyperparameter Tuning:** Finding the right number of LSTM layers, units, sequence length, etc., was time-consuming. Vertex AI does offer Hyperparameter Tuning jobs, which I explored briefly but didn't fully utilize for this iteration due to time constraints. That's definitely something for future exploration.
+*   **Real-time Latency:** While Vertex AI endpoints are pretty fast, the round trip of sending data, getting a prediction, and then doing post-processing adds latency. [2, 13] For true high-frequency trading, this setup might be too slow, but for spotting slightly longer-term anomalies (over minutes rather than milliseconds), it seemed viable. [6]
+*   **Cost Management:** Running custom training jobs and keeping endpoints live on Vertex AI costs money. [1] For a student project, this meant being mindful of machine types and deleting resources when not in use.
+*   **"It works on my machine!" to "It works on Vertex AI!":** The classic. Ensuring the training environment on Vertex AI exactly matched my local setup (or at least was compatible) took a few tries. Docker knowledge is invaluable here. [18, 19]
+
+This project was a fantastic learning experience. Moving from a theoretical understanding of LSTMs and anomaly detection to a working (albeit a bit rough around the edges) system that integrates cloud AI services was a big step. There are many ways to improve it – more sophisticated models, better data pipelines, more rigorous thresholding – but as a foundation, I'm pretty happy with how it turned out.
